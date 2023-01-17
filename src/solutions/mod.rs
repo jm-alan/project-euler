@@ -351,3 +351,24 @@ pub fn largest_product_in_grid() -> u64 {
 
   largest
 }
+
+#[inline(always)]
+fn count_divisors(num: u64) -> u64 {
+  let mut divisors = 0;
+  for i in 1..=((num as f64).sqrt() as u64) {
+    if num % i == 0 {
+      divisors += 2
+    }
+  }
+  divisors
+}
+
+pub fn highly_divisible_triangular_number() -> u64 {
+  let mut next_add = 2;
+  let mut current_triangle = 1;
+  while count_divisors(current_triangle) <= 500 {
+    current_triangle += next_add;
+    next_add += 1;
+  }
+  current_triangle
+}
