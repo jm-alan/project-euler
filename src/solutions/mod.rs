@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub fn mult_three_five() -> u64 {
   let mut sum: u64 = 0;
   for i in 0..1000 {
@@ -394,4 +396,28 @@ pub fn longest_collatz_sequence() -> u64 {
     }
   }
   generates_longest
+}
+
+#[inline(always)]
+fn calculate_paths_through_point(
+  depth: u64,
+  position: u64,
+  computed: &mut HashMap<(u64, u64), u64>,
+) -> u64 {
+  if computed.contains_key(&(depth, position)) {
+    *computed.get(&(depth, position)).unwrap()
+  } else if depth == 0 || position == 0 {
+    1
+  } else {
+    let mut sum = 0;
+    for i in 0..=position {
+      sum += calculate_paths_through_point(depth - 1, i, computed);
+    }
+    computed.insert((depth, position), sum);
+    sum
+  }
+}
+
+pub fn lattice_paths() -> u64 {
+  calculate_paths_through_point(20, 20, &mut HashMap::new())
 }
