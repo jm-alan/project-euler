@@ -3,9 +3,9 @@ pub mod solutions;
 use crate::solutions::{
   even_fibonacci_numbers, highly_divisible_triangular_number,
   largest_palindrome_product, largest_prime_factor, largest_product_in_grid,
-  largest_product_in_series, mult_three_five, smallest_multiple,
-  special_pythagorean_triplet, sum_square_difference, summation_of_primes,
-  ten_thousand_first_prime,
+  largest_product_in_series, longest_collatz_sequence, mult_three_five,
+  smallest_multiple, special_pythagorean_triplet, sum_square_difference,
+  summation_of_primes, ten_thousand_first_prime,
 };
 
 fn main() {
@@ -29,8 +29,12 @@ fn main() {
   // );
   // println!("10. Summation of primes: {}", summation_of_primes());
   // println!("11. Largest product in grid: {}", largest_product_in_grid());
+  // println!(
+  //   "12. Highly divisible triangular number: {}",
+  //   highly_divisible_triangular_number()
+  // );
   println!(
-    "12. Highly divisible triangular number: {}",
-    highly_divisible_triangular_number()
+    "14. Longest Collatz sequence: {}",
+    longest_collatz_sequence()
   );
 }

@@ -372,3 +372,26 @@ pub fn highly_divisible_triangular_number() -> u64 {
   }
   current_triangle
 }
+
+#[inline(always)]
+fn get_collatz_length(mut num: u64) -> u64 {
+  let mut terms = 1;
+  while num != 1 {
+    num = if num % 2 == 0 { num / 2 } else { (3 * num) + 1 };
+    terms += 1;
+  }
+  terms
+}
+
+pub fn longest_collatz_sequence() -> u64 {
+  let mut longest = 0;
+  let mut generates_longest = 1;
+  for i in 1..1000000 {
+    let c_length = get_collatz_length(i);
+    if c_length > longest {
+      longest = c_length;
+      generates_longest = i;
+    }
+  }
+  generates_longest
+}
