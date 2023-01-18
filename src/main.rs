@@ -6,9 +6,9 @@ use crate::solutions::{
   even_fibonacci_numbers, highly_divisible_triangular_number,
   largest_palindrome_product, largest_prime_factor, largest_product_in_grid,
   largest_product_in_series, lattice_paths, longest_collatz_sequence,
-  mult_three_five, number_letter_counts, smallest_multiple,
-  special_pythagorean_triplet, sum_square_difference, summation_of_primes,
-  ten_thousand_first_prime,
+  maximum_path_sum_i, maximum_path_sum_ii, mult_three_five,
+  number_letter_counts, smallest_multiple, special_pythagorean_triplet,
+  sum_square_difference, summation_of_primes, ten_thousand_first_prime,
 };
 
 fn js_run(filename: &str) -> String {
@@ -61,4 +61,6 @@ fn main() {
   println!("15. Lattice paths: {}", lattice_paths());
   println!("16. Power digit sum: {}", js_run("sixteen"));
   println!("17. Number letter counts: {}", number_letter_counts());
+  println!("18. Maximum path sum I: {}", maximum_path_sum_i());
+  println!("67. Maximum path sum II: {}", maximum_path_sum_ii());
 }

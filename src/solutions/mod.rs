@@ -1,3 +1,5 @@
+mod big_triangle;
+
 use std::collections::HashMap;
 
 pub fn mult_three_five() -> u64 {
@@ -459,4 +461,81 @@ pub fn number_letter_counts() -> u64 {
     sum += count_letters(i);
   }
   sum
+}
+
+#[inline(always)]
+fn max_sum_at_point(
+  triangle: &Vec<Vec<u64>>,
+  depth: usize,
+  position: usize,
+  memo: &mut HashMap<(u64, u64), u64>,
+) -> u64 {
+  let udepth = depth as u64;
+  let upos = position as u64;
+  if memo.contains_key(&(udepth, upos)) {
+    return *memo.get(&(udepth, upos)).unwrap();
+  };
+  if depth == 0 {
+    return triangle[0][0];
+  }
+  if position == 0 {
+    let result = triangle[depth][0]
+      + max_sum_at_point(triangle, depth - 1, position, memo);
+    memo.insert((udepth, upos), result);
+    return result;
+  } else if position == triangle[depth].len() - 1 {
+    let result = triangle[depth][position]
+      + max_sum_at_point(triangle, depth - 1, position - 1, memo);
+    memo.insert((udepth, upos), result);
+    return result;
+  }
+  let result = triangle[depth][position]
+    + u64::max(
+      max_sum_at_point(triangle, depth - 1, position - 1, memo),
+      max_sum_at_point(triangle, depth - 1, position, memo),
+    );
+  memo.insert((udepth, upos), result);
+  result
+}
+
+#[inline(always)]
+fn max_sum_at_depth(
+  triangle: &Vec<Vec<u64>>,
+  depth: usize,
+  memo: &mut HashMap<(u64, u64), u64>,
+) -> u64 {
+  let mut largest = 0;
+  for i in 0..triangle[depth].len() {
+    largest = u64::max(largest, max_sum_at_point(triangle, depth, i, memo));
+  }
+  largest
+}
+
+pub fn maximum_path_sum_i() -> u64 {
+  let triangle: Vec<Vec<u64>> = vec![
+    vec![75],
+    vec![95, 64],
+    vec![17, 47, 82],
+    vec![18, 35, 87, 10],
+    vec![20, 04, 82, 47, 65],
+    vec![19, 01, 23, 75, 03, 34],
+    vec![88, 02, 77, 73, 07, 63, 67],
+    vec![99, 65, 04, 28, 06, 16, 70, 92],
+    vec![41, 41, 26, 56, 83, 40, 80, 70, 33],
+    vec![41, 48, 72, 33, 47, 32, 37, 16, 94, 29],
+    vec![53, 71, 44, 65, 25, 43, 91, 52, 97, 51, 14],
+    vec![70, 11, 33, 28, 77, 73, 17, 78, 39, 68, 17, 57],
+    vec![91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48],
+    vec![63, 66, 04, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31],
+    vec![04, 62, 98, 27, 23, 09, 70, 98, 73, 93, 38, 53, 60, 04, 23],
+  ];
+  let mut memo = HashMap::<(u64, u64), u64>::new();
+  let result = max_sum_at_depth(&triangle, triangle.len() - 1, &mut memo);
+  result
+}
+
+pub fn maximum_path_sum_ii() -> u64 {
+  let triangle: Vec<Vec<u64>> = big_triangle::get();
+  let mut memo = HashMap::<(u64, u64), u64>::new();
+  max_sum_at_depth(&triangle, triangle.len() - 1, &mut memo)
 }
