@@ -1,12 +1,32 @@
 pub mod solutions;
 
+use std::process::{Command, Output};
+
 use crate::solutions::{
   even_fibonacci_numbers, highly_divisible_triangular_number,
   largest_palindrome_product, largest_prime_factor, largest_product_in_grid,
   largest_product_in_series, lattice_paths, longest_collatz_sequence,
-  mult_three_five, smallest_multiple, special_pythagorean_triplet,
-  sum_square_difference, summation_of_primes, ten_thousand_first_prime,
+  mult_three_five, number_letter_counts, smallest_multiple,
+  special_pythagorean_triplet, sum_square_difference, summation_of_primes,
+  ten_thousand_first_prime,
 };
+
+fn js_run(filename: &str) -> String {
+  let mut js_runner = Command::new("node");
+  js_runner.current_dir("./js");
+  let Output {
+    status: _,
+    stdout,
+    stderr: _,
+  } = js_runner
+    .arg(filename)
+    .output()
+    .expect(&format!("Failed to run node ./js/{filename}"));
+  std::str::from_utf8(&stdout)
+    .expect(&format!("Failed to parse output from node ./js/{filename}"))
+    .trim()
+    .to_string()
+}
 
 fn main() {
   println!("1. Multiples of 3 or 5: {}", mult_three_five());
@@ -33,9 +53,12 @@ fn main() {
     "12. Highly divisible triangular number: {}",
     highly_divisible_triangular_number()
   );
+  println!("13. Large sum: {}", js_run("thirteen"));
   println!(
     "14. Longest Collatz sequence: {}",
     longest_collatz_sequence()
   );
-  println!("15. Lattic paths: {}", lattice_paths());
+  println!("15. Lattice paths: {}", lattice_paths());
+  println!("16. Power digit sum: {}", js_run("sixteen"));
+  println!("17. Number letter counts: {}", number_letter_counts());
 }

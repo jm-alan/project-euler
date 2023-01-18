@@ -421,3 +421,42 @@ fn calculate_paths_through_point(
 pub fn lattice_paths() -> u64 {
   calculate_paths_through_point(20, 20, &mut HashMap::new())
 }
+
+const NUMBER_LENGTH: [u64; 27] = [
+  3, 3, 5, 4, 4, 3, 5, 5, 4, 3, 6, 6, 8, 8, 7, 7, 9, 8, 8, 6, 6, 5, 5, 5, 7, 6,
+  6,
+];
+
+#[inline(always)]
+fn count_letters(num: u64) -> u64 {
+  if num == 0 {
+    return 0;
+  }
+  if num == 1000 {
+    return 11;
+  };
+  let mut sum = 0;
+  if num <= 20 {
+    return NUMBER_LENGTH[(num - 1) as usize];
+  } else if num < 100 {
+    let rem = num % 10;
+    let offset = ((num - rem) / 10) - 2;
+    sum += count_letters(rem);
+    sum += NUMBER_LENGTH[(19 + offset) as usize];
+  } else {
+    let rem = num % 100;
+    let rem_count = count_letters(rem);
+    sum += if rem_count > 0 { rem_count + 3 } else { 0 };
+    sum += count_letters((num - rem) / 100);
+    sum += 7;
+  }
+  sum
+}
+
+pub fn number_letter_counts() -> u64 {
+  let mut sum = 0;
+  for i in 1..=1000 {
+    sum += count_letters(i);
+  }
+  sum
+}
