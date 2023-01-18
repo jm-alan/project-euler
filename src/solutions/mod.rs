@@ -206,13 +206,12 @@ pub fn largest_product_in_series() -> u64 {
 pub fn special_pythagorean_triplet() -> f64 {
   let mut a: f64 = 1.0;
   let mut b: f64 = 2.0;
-  let mut c = (a.powf(2.0) + b.powf(2.0)).sqrt();
   while a < 400.0 {
     while b < 400.0 {
       let a2 = a.powf(2.0);
       let b2 = b.powf(2.0);
       let interstitial_pow = a2 + b2;
-      c = (interstitial_pow as f64).sqrt();
+      let c = (interstitial_pow as f64).sqrt();
       let sum = a + b + c;
       if sum == 1000.0 {
         return a * b * c;
@@ -538,4 +537,75 @@ pub fn maximum_path_sum_ii() -> u64 {
   let triangle: Vec<Vec<u64>> = big_triangle::get();
   let mut memo = HashMap::<(u64, u64), u64>::new();
   max_sum_at_depth(&triangle, triangle.len() - 1, &mut memo)
+}
+
+const DAYS: [u8; 13] = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+#[derive(Debug, Clone, Copy)]
+struct Calendar {
+  weekday: u8,
+  date: u8,
+  month: u8,
+  year: u16,
+  leap_year_accounted: bool,
+}
+
+impl Calendar {
+  fn new(weekday: u8, date: u8, month: u8, year: u16) -> Self {
+    Self {
+      weekday,
+      date,
+      month,
+      year,
+      leap_year_accounted: false,
+    }
+  }
+
+  fn date_pair(&self) -> (u8, u8) {
+    (self.weekday, self.date)
+  }
+
+  fn is_leap_year(&self) -> bool {
+    let mod_four = self.year % 4 == 0;
+    let mod_hundred = self.year % 100 == 0;
+    let mod_four_hundred = self.year % 400 == 0;
+    mod_four && (!mod_hundred || mod_four_hundred)
+  }
+
+  fn next_weekday(&mut self) {
+    self.weekday = if self.weekday == 7 {
+      1
+    } else {
+      self.weekday + 1
+    };
+    if self.date >= DAYS[self.month as usize] {
+      if self.month == 2 && !self.leap_year_accounted && self.is_leap_year() {
+        self.leap_year_accounted = true;
+        self.date += 1;
+        return;
+      }
+      self.leap_year_accounted = false;
+      self.date = 1;
+      if self.month == 12 {
+        self.month = 1;
+        self.year += 1;
+      } else {
+        self.month += 1
+      }
+    } else {
+      self.date += 1
+    }
+  }
+}
+
+pub fn counting_sundays() -> u64 {
+  let mut first_sundays = 0;
+  let mut calendar = Calendar::new(2, 1, 1, 1900);
+  while calendar.year < 2001 {
+    if calendar.year >= 1901 && calendar.date_pair() == (1, 1) {
+      first_sundays += 1
+    };
+    calendar.next_weekday();
+  }
+  first_sundays
 }
