@@ -2,14 +2,20 @@ mod big_triangle;
 
 use std::collections::HashMap;
 
+#[inline(always)]
+fn sum_multiples_below(multiple: u64, mut limit: u64) -> u64 {
+  limit -= 1; // guarantees "below" in case limit % multiple == 0
+  limit -= limit % multiple;
+  limit /= multiple;
+  limit *= limit + 1;
+  limit /= 2;
+  limit *= multiple;
+  limit
+}
+
 pub fn mult_three_five() -> u64 {
-  let mut sum: u64 = 0;
-  for i in 0..1000 {
-    if i % 3 == 0 || i % 5 == 0 {
-      sum += i
-    }
-  }
-  sum
+  sum_multiples_below(3, 1000) + sum_multiples_below(5, 1000)
+    - sum_multiples_below(15, 1000)
 }
 
 pub fn even_fibonacci_numbers() -> u64 {
