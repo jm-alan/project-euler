@@ -70,9 +70,13 @@ fn main() {
   // println!("21. Amicable numbers: {}", amicable_numbers());
   // println!("22. Names scores: {}", names_scoares());
   // println!("23. Non-abundant sums: {}", non_abundant_sums());
+  // println!(
+  //   "24. Lexicographic permutations: {}",
+  //   lexicographic_permutations()
+  // );
   println!(
-    "24. Lexicographic permutations: {}",
-    lexicographic_permutations()
+    "25. 1000-digit Fibonacci number: {}",
+    js_run("twenty-five", &[])
   );
   // println!("67. Maximum path sum II: {}", maximum_path_sum_ii());
 }
