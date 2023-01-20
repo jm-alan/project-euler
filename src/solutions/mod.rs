@@ -1,6 +1,10 @@
 mod big_triangle;
 
-use std::collections::HashMap;
+use std::{
+  collections::HashMap,
+  fs::File,
+  io::{BufRead, BufReader},
+};
 
 #[inline(always)]
 fn sum_multiples_below(multiple: u64, mut limit: u64) -> u64 {
@@ -614,4 +618,189 @@ pub fn counting_sundays() -> u64 {
     calendar.next_weekday();
   }
   first_sundays
+}
+
+#[inline(always)]
+fn divisor_sum(num: u64) -> u64 {
+  let mut sum = 1;
+  for i in 2..=(num / 2) {
+    if num % i == 0 {
+      sum += i
+    }
+  }
+  sum
+}
+
+#[inline(always)]
+fn test_and_sum_amicable(
+  num: u64,
+  amicable_map: &mut HashMap<u64, u64>,
+  amicable_sum: &mut u64,
+) {
+  let sum = divisor_sum(num);
+  if sum == num {
+    return;
+  };
+  if let Some(val) = amicable_map.get(&sum) {
+    if *val == num {
+      *amicable_sum += sum + num
+    }
+  } else {
+    amicable_map.insert(num, sum);
+  }
+}
+
+pub fn amicable_numbers() -> u64 {
+  let mut amicable_map = HashMap::<u64, u64>::new();
+  let mut amicable_sum = 0;
+  for i in 1..10000 {
+    test_and_sum_amicable(i, &mut amicable_map, &mut amicable_sum)
+  }
+  amicable_sum
+}
+
+const CHARS: [char; 26] = [
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+  'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+];
+
+#[inline(always)]
+fn alphabet_score(s: &str, vals: &HashMap<char, u8>) -> u64 {
+  let mut score = 0;
+  for char in s.chars() {
+    score += *vals.get(&char).unwrap() as u64
+  }
+  score
+}
+
+pub fn names_scoares() -> u64 {
+  let mut alphabet_vals = HashMap::<char, u8>::new();
+  for i in 0..26 {
+    alphabet_vals.insert(CHARS[i], i as u8 + 1);
+  }
+  let Ok(file) = File::open("./src/solutions/names.txt") else {
+    panic!("Failed to open names file");
+  };
+  let line_reader = BufReader::new(file);
+  let mut lines = line_reader.lines();
+  let mut name_score_sum = 0;
+  let mut names: Vec<String> = vec![];
+  while let Some(Ok(line)) = lines.next() {
+    names.push(line);
+  }
+  names.sort_unstable();
+  for i in 0..names.len() {
+    name_score_sum += alphabet_score(&names[i], &alphabet_vals) * (i as u64 + 1)
+  }
+  name_score_sum
+}
+
+#[inline(always)]
+fn sum_factors(num: u64) -> u64 {
+  let mut sum = 0;
+  for i in 1..=(num / 2) {
+    if num % i == 0 {
+      sum += i
+    };
+  }
+  sum
+}
+
+#[inline(always)]
+fn is_abundant(num: u64) -> bool {
+  sum_factors(num) > num
+}
+
+#[inline(always)]
+fn has_abundant_constituents(num: u64, abundant_nums: &Vec<u64>) -> bool {
+  let mut nums_iter = abundant_nums.iter();
+  while let Some(some_num) = nums_iter.next() {
+    let times_two = *some_num * 2;
+    if times_two > num {
+      break;
+    };
+    if times_two == num {
+      return true;
+    }
+  }
+
+  let mut lower = 0;
+  let mut upper = abundant_nums.len() - 1;
+  while lower < upper {
+    let sum = abundant_nums[lower] + abundant_nums[upper];
+    if sum == num {
+      return true;
+    } else if sum > num {
+      upper -= 1;
+    } else if sum < num {
+      lower += 1;
+    }
+  }
+  false
+}
+
+pub fn non_abundant_sums() -> u64 {
+  let mut abundant_nums = Vec::<u64>::new();
+  for i in 1..=28213 {
+    if is_abundant(i) {
+      abundant_nums.push(i);
+    }
+  }
+  let mut total_sum = 28213 * 28214 / 2;
+  for i in 1..=28213 {
+    if has_abundant_constituents(i, &abundant_nums) {
+      total_sum -= i;
+    }
+  }
+  total_sum
+}
+
+trait Rotary {
+  fn rotate_from(&mut self, idx: usize, times: u64);
+}
+
+impl Rotary for [u64] {
+  #[inline(always)]
+  fn rotate_from(&mut self, idx: usize, times: u64) {
+    for _ in 0..times {
+      for i in idx..self.len() {
+        if self[i] > self[idx] {
+          self.swap(i, idx);
+          break;
+        }
+      }
+    }
+  }
+}
+trait Factorial {
+  fn factorial(self) -> Self;
+}
+
+impl Factorial for u64 {
+  #[inline(always)]
+  fn factorial(mut self) -> Self {
+    let mut f = 1;
+    while self > 1 {
+      f *= self;
+      self -= 1;
+    }
+    f
+  }
+}
+
+pub fn lexicographic_permutations() -> u64 {
+  let mut digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let mut permutations = 999999;
+  let mut current_digit = 0;
+  while permutations > 0 {
+    let iterative_size =
+      (((digits.len() - 1) - current_digit) as u64).factorial();
+    let rotations = permutations / iterative_size;
+    digits.rotate_from(current_digit, rotations);
+    permutations -= iterative_size * rotations;
+    current_digit += 1;
+  }
+  digits.into_iter().enumerate().fold(0, |acc, (idx, next)| {
+    acc + (10u64.pow((digits.len() - (idx + 1)) as u32) * next)
+  })
 }
